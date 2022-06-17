@@ -34,7 +34,7 @@ new CiStack(app, "apps-ci-stack-dev", {
     region: environments.dev.region,
     account: process.env.CDK_DEFAULT_ACCOUNT,
   },
-  branch: "dev",
+  branch: "main",
 });
 
 new CiStack(app, "apps-ci-stack-test", {
