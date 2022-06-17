@@ -31,6 +31,7 @@ export class CiStack extends Stack {
           }
         ),
         commands: ["ls"],
+        primaryOutputDirectory: "./teams/capstone-app-devs/ci",
       }),
     });
 
