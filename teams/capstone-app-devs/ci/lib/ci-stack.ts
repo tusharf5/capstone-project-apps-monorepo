@@ -103,10 +103,10 @@ export class CiStack extends Stack {
           resources: [
             `arn:aws:secretsmanager:${props.env!.region}:${
               props.env!.account
-            }:secret:DOCKER_USERNAME`,
+            }:secret:DOCKER_USERNAME-dduUxa`,
             `arn:aws:secretsmanager:${props.env!.region}:${
               props.env!.account
-            }:secret:DOCKER_ACCESS_TOKEN`,
+            }:secret:DOCKER_ACCESS_TOKEN-3OR8wo`,
           ],
           actions: [
             "secretsmanager:GetSecretValue",
