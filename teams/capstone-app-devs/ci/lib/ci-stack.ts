@@ -52,16 +52,6 @@ export class CiStack extends Stack {
 
     pipeline.addStage(infraStage);
 
-    const ecrUri = cdk.aws_ssm.StringParameter.valueForStringParameter(
-      this,
-      `/${props.stage}/service-a/repo-uri`
-    );
-
-    const ecrArn = cdk.aws_ssm.StringParameter.valueForStringParameter(
-      this,
-      `/${props.stage}/service-a/repo-arn`
-    );
-
     /**
      * CDK pipelines will generate CodeBuild projects for each ShellStep you use,
      * and it will also generate CodeBuild projects to publish assets and
@@ -71,17 +61,22 @@ export class CiStack extends Stack {
      * you to customize various aspects of the projects:
      */
 
+    // valueForStringParameter methods work by adding a CloudFormation parameter.
+    // valueFromLookup methods work by actualy fetching during the synth process
+
     const buildImage = new pipelines.CodeBuildStep("BuildDockerImage", {
-      commands: ['echo "I will build docker"'],
+      commands: [
+        'echo "I will build docker"',
+        `echo $(aws --region=${
+          props.env!.region
+        } ssm get-parameter --name "${`/${props.stage}/service-a/repo-uri`}" --with-decryption --output text --query Parameter.Value)`,
+      ],
       buildEnvironment: {
         privileged: true,
       },
-      env: {
-        ECR_REPOSITORY_URI: ecrUri,
-      },
       rolePolicyStatements: [
         new cdk.aws_iam.PolicyStatement({
-          resources: [ecrArn],
+          resources: ["*"],
           actions: ["ecr:*"],
           effect: cdk.aws_iam.Effect.ALLOW,
         }),
