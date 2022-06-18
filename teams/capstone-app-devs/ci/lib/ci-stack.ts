@@ -4,8 +4,10 @@ import {
   CodePipeline,
   CodePipelineSource,
   ShellStep,
+  Step,
 } from "aws-cdk-lib/pipelines";
 import * as cdk from "aws-cdk-lib";
+import * as pipelines from "aws-cdk-lib/pipelines";
 
 import { CiStage } from "./ci-stage";
 
@@ -30,18 +32,29 @@ export class CiStack extends Stack {
             ),
           }
         ),
-        commands: ["ls"],
-        primaryOutputDirectory: "./teams/capstone-app-devs/ci",
+        installCommands: ['echo "Synth installCommands"'],
+        commands: [
+          'echo "Synth commands"',
+          "cd teams/capstone-app-devs/ci",
+          "yarn install",
+          "npx cdk synth",
+        ],
+        primaryOutputDirectory: "teams/capstone-app-devs/ci/cdk.out",
       }),
     });
 
-    const stage = pipeline.addStage(
-      new CiStage(this, props.stage, {
-        env: { account: props.env!.account, region: props.env!.region },
-        stage: props.stage,
-      })
-    );
+    const buildStage = new CiStage(this, props.stage, {
+      env: { account: props.env!.account, region: props.env!.region },
+      stage: props.stage,
+    });
 
+    const stage = pipeline.addStage(buildStage);
+
+    // stage.addPre(
+    //   new pipelines.ShellStep("Change Dir", {
+    //     commands: ["ls", "cd teams/capstone-app-devs/ci"],
+    //   })
+    // );
     // const uri = cdk.aws_ssm.StringParameter.valueForStringParameter(
     //   this,
     //   `${props.stage}/service-a/repo-uri`
