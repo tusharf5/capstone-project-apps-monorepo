@@ -23,5 +23,10 @@ export class ServiceAStack extends cdk.Stack {
       type: ParameterType.STRING,
       stringValue: serviceARepo.repositoryUri,
     });
+    new cdk.aws_ssm.StringParameter(this, "ServiceARepoUriParam", {
+      parameterName: `/${props.stage}/service-a/repo-arn`,
+      type: ParameterType.STRING,
+      stringValue: serviceARepo.repositoryArn,
+    });
   }
 }

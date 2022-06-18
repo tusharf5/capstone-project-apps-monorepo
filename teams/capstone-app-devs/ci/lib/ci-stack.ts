@@ -16,6 +16,8 @@ interface CiStackProps extends StackProps {
   branch: string;
 }
 
+// Docs at https://www.npmjs.com/package/@aws-cdk/pipelines
+
 export class CiStack extends Stack {
   constructor(scope: Construct, id: string, props: CiStackProps) {
     super(scope, id, props);
@@ -43,29 +45,77 @@ export class CiStack extends Stack {
       }),
     });
 
-    const buildStage = new CiStage(this, "BuildServiceA", {
+    const infraStage = new CiStage(this, "ServiceAInfrastructure", {
       env: { account: props.env!.account, region: props.env!.region },
       stage: props.stage,
     });
 
-    const stage = pipeline.addStage(buildStage);
+    pipeline.addStage(infraStage);
 
-    // stage.addPre(
-    //   new pipelines.ShellStep("Change Dir", {
-    //     commands: ["ls", "cd teams/capstone-app-devs/ci"],
-    //   })
-    // );
-    // const uri = cdk.aws_ssm.StringParameter.valueForStringParameter(
-    //   this,
-    //   `${props.stage}/service-a/repo-uri`
-    // );
+    const ecrUri = cdk.aws_ssm.StringParameter.valueForStringParameter(
+      this,
+      `/${props.stage}/service-a/repo-uri`
+    );
 
-    // https://cdk8s.io/
+    const ecrArn = cdk.aws_ssm.StringParameter.valueForStringParameter(
+      this,
+      `/${props.stage}/service-a/repo-arn`
+    );
 
-    // stage.addPost(
-    //   new ShellStep("triggerCD", {
-    //     commands: [],
-    //   })
-    // );
+    /**
+     * CDK pipelines will generate CodeBuild projects for each ShellStep you use,
+     * and it will also generate CodeBuild projects to publish assets and
+     * perform the self-mutation of the pipeline. To control the various
+     * aspects of the CodeBuild projects that get generated, use a CodeBuildStep
+     * instead of a ShellStep. This class has a number of properties that allow
+     * you to customize various aspects of the projects:
+     */
+
+    const buildImage = new pipelines.CodeBuildStep("Build", {
+      commands: ['echo "I will build docker"'],
+      buildEnvironment: {
+        privileged: true,
+      },
+      env: {
+        ECR_REPOSITORY_URI: ecrUri,
+      },
+      rolePolicyStatements: [
+        new cdk.aws_iam.PolicyStatement({
+          resources: [ecrArn],
+          actions: ["ecr:*"],
+          effect: cdk.aws_iam.Effect.ALLOW,
+        }),
+      ],
+    });
+
+    // addStage no longer means "add a CodePipeline Stage to the pipeline" --
+    // it means: "deploy all stacks inside a cdk.Stage".
+
+    const trigger = new pipelines.ShellStep("", {
+      commands: ['echo " I will trigger another pipeline "'],
+    });
+
+    const triggerWave = pipeline.addWave("TriggerNext");
+
+    triggerWave.addPost(trigger);
+
+    // // Add our CodeBuild project to our CodePipeline
+    // const buildAction = new pipelines.CodeBuildStep("", {
+    //   input: CodePipelineSource.gitHub(
+    //     "tusharf5/capstone-project-apps-monorepo",
+    //     props.branch,
+    //     {
+    //       authentication: cdk.SecretValue.secretsManager(
+    //         "capstone-github-token"
+    //       ),
+    //     }
+    //   ),
+    //   commands: [],
+    // });
+
+    // CodeCommit repository that contains the Dockerfile used to build our ECR image:
+    // code_repo = new codecommit.Repository(this, "codeRepository", {
+    //   repositoryName: "container-image-repo",
+    // });
   }
 }
