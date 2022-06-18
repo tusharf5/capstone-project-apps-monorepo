@@ -22,8 +22,8 @@ export class CiStack extends Stack {
   constructor(scope: Construct, id: string, props: CiStackProps) {
     super(scope, id, props);
 
-    const pipeline = new CodePipeline(this, "CaptstonePipeline", {
-      pipelineName: `${props.stage}-captstone-pipeline`,
+    const pipeline = new CodePipeline(this, "captstone-apps-pipeline", {
+      pipelineName: `${props.stage}-captstone-apps-pipeline`,
       synth: new ShellStep("Synth", {
         input: CodePipelineSource.gitHub(
           "tusharf5/capstone-project-apps-monorepo",
@@ -45,7 +45,7 @@ export class CiStack extends Stack {
       }),
     });
 
-    const infraStage = new CiStage(this, "ServiceAInfrastructure", {
+    const infraStage = new CiStage(this, "service-a-resources", {
       env: { account: props.env!.account, region: props.env!.region },
       stage: props.stage,
     });
@@ -64,7 +64,7 @@ export class CiStack extends Stack {
     // valueForStringParameter methods work by adding a CloudFormation parameter.
     // valueFromLookup methods work by actualy fetching during the synth process
 
-    const buildImage = new pipelines.CodeBuildStep("BuildDockerImage", {
+    const buildImage = new pipelines.CodeBuildStep("build-docker-image", {
       commands: [
         'echo "I will build docker"',
         `echo $(aws --region=${
@@ -86,11 +86,11 @@ export class CiStack extends Stack {
     // addStage no longer means "add a CodePipeline Stage to the pipeline" --
     // it means: "deploy all stacks inside a cdk.Stage".
 
-    const trigger = new pipelines.ShellStep("TriggerManifestChanges", {
+    const trigger = new pipelines.ShellStep("trigger-manifest-changes", {
       commands: ['echo " I will trigger another pipeline "'],
     });
 
-    const triggerWave = pipeline.addWave("TriggerNext");
+    const triggerWave = pipeline.addWave("trigger-next");
 
     triggerWave.addPost(trigger);
 

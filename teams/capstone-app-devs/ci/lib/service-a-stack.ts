@@ -13,18 +13,18 @@ export class ServiceAStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: Props) {
     super(scope, id);
 
-    const serviceARepo = new cdk.aws_ecr.Repository(this, "ServiceARepo", {
+    const serviceARepo = new cdk.aws_ecr.Repository(this, "service-a-repo", {
       imageScanOnPush: true,
       repositoryName: `${props.stage}-service-a`,
     });
 
-    new cdk.aws_ssm.StringParameter(this, "ServiceARepoUriParam", {
+    new cdk.aws_ssm.StringParameter(this, "service-a-repo-uri-param", {
       parameterName: `/${props.stage}/service-a/repo-uri`,
       type: ParameterType.STRING,
       stringValue: serviceARepo.repositoryUri,
     });
 
-    new cdk.aws_ssm.StringParameter(this, "ServiceARepoArnParam", {
+    new cdk.aws_ssm.StringParameter(this, "service-a-repo-arn-param", {
       parameterName: `/${props.stage}/service-a/repo-arn`,
       type: ParameterType.STRING,
       stringValue: serviceARepo.repositoryArn,

@@ -11,7 +11,7 @@ export class CiStage extends cdk.Stage {
   constructor(scope: Construct, id: string, props: StageProps) {
     super(scope, id, props);
 
-    new ServiceAStack(this, "ServiceAStack", {
+    new ServiceAStack(this, "core-stack", {
       stage: props.stage,
       region: props.env!.region!,
     });
