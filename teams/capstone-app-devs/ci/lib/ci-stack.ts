@@ -80,6 +80,11 @@ export class CiStack extends Stack {
           actions: ["ecr:*"],
           effect: cdk.aws_iam.Effect.ALLOW,
         }),
+        new cdk.aws_iam.PolicyStatement({
+          resources: ["*"],
+          actions: ["ssm:GetParameter"],
+          effect: cdk.aws_iam.Effect.ALLOW,
+        }),
       ],
     });
 
@@ -89,6 +94,7 @@ export class CiStack extends Stack {
 
     // addStage no longer means "add a CodePipeline Stage to the pipeline" --
     // it means: "deploy all stacks inside a cdk.Stage".
+    // To add a stage use waves with post, pre
 
     const trigger = new pipelines.ShellStep("trigger-manifest-changes", {
       commands: ['echo " I will trigger another pipeline "'],
