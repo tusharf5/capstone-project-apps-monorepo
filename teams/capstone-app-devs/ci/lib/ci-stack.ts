@@ -71,7 +71,7 @@ export class CiStack extends Stack {
      * you to customize various aspects of the projects:
      */
 
-    const buildImage = new pipelines.CodeBuildStep("Build", {
+    const buildImage = new pipelines.CodeBuildStep("BuildDockerImage", {
       commands: ['echo "I will build docker"'],
       buildEnvironment: {
         privileged: true,
@@ -91,7 +91,7 @@ export class CiStack extends Stack {
     // addStage no longer means "add a CodePipeline Stage to the pipeline" --
     // it means: "deploy all stacks inside a cdk.Stage".
 
-    const trigger = new pipelines.ShellStep("", {
+    const trigger = new pipelines.ShellStep("TriggerManifestChanges", {
       commands: ['echo " I will trigger another pipeline "'],
     });
 
