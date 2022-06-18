@@ -74,7 +74,7 @@ export class CiStack extends Stack {
         `cd teams/capstone-app-devs/${props.stage}/service-a`,
         `DOCKER_USERNAME=$(aws secretsmanager get-secret-value --secret-id "DOCKER_USERNAME" --output text --query SecretString)`,
         `DOCKER_ACCESS_TOKEN=$(aws secretsmanager get-secret-value --secret-id "DOCKER_ACCESS_TOKEN" --output text --query SecretString)`,
-        `docker login -u $DOCKER_USERNAME --password-stdin $DOCKER_ACCESS_TOKEN`,
+        `echo $DOCKER_ACCESS_TOKEN | docker login -u $DOCKER_USERNAME --password-stdin`,
         `docker build -f src/Dockerfile -t service-a:latest .`,
         `docker logout`,
         `docker tag service-a:latest "$REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION"`,
@@ -130,6 +130,10 @@ export class CiStack extends Stack {
     const trigger = new pipelines.ShellStep("trigger-manifest-changes", {
       commands: ['echo " I will trigger another pipeline "'],
     });
+
+    pipeline
+      .addWave("manual-approval")
+      .addPre(new pipelines.ManualApprovalStep("manual-approval"));
 
     const triggerWave = pipeline.addWave("trigger-next");
 
