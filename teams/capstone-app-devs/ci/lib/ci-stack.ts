@@ -66,21 +66,23 @@ export class CiStack extends Stack {
 
     const buildImage = new pipelines.CodeBuildStep("build-docker-image", {
       input: sourceArtifact,
-      installCommands: [
-        `aws ecr get-login-password --region ${
-          props.env!.region
-        } | docker login --username AWS --password-stdin ${
-          props.env!.account
-        }.dkr.ecr.${props.env!.region}.amazonaws.com`,
-      ],
       commands: [
         'echo "I will build docker"',
         `REPO_URI=$(aws --region=${
           props.env!.region
         } ssm get-parameter --name "${`/${props.stage}/service-a/repo-uri`}" --with-decryption --output text --query Parameter.Value)`,
         `cd teams/capstone-app-devs/${props.stage}/service-a`,
+        `DOCKER_USERNAME=$(aws secretsmanager get-secret-value --secret-id "DOCKER_USERNAME" --output text --query SecretString)`,
+        `DOCKER_ACCESS_TOKEN=$(aws secretsmanager get-secret-value --secret-id "DOCKER_ACCESS_TOKEN" --output text --query SecretString)`,
+        `docker login -u $DOCKER_USERNAME --password-stdin $DOCKER_ACCESS_TOKEN`,
         `docker build -f src/Dockerfile -t service-a:latest .`,
+        `docker logout`,
         `docker tag service-a:latest "$REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION"`,
+        `aws ecr get-login-password --region ${
+          props.env!.region
+        } | docker login --username AWS --password-stdin ${
+          props.env!.account
+        }.dkr.ecr.${props.env!.region}.amazonaws.com`,
         `docker push "$REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION"`,
       ],
       buildEnvironment: {
@@ -95,6 +97,23 @@ export class CiStack extends Stack {
         new cdk.aws_iam.PolicyStatement({
           resources: ["*"],
           actions: ["ssm:GetParameter"],
+          effect: cdk.aws_iam.Effect.ALLOW,
+        }),
+        new cdk.aws_iam.PolicyStatement({
+          resources: [
+            `arn:aws:secretsmanager:${props.env!.region}:${
+              props.env!.account
+            }:secret:DOCKER_USERNAME`,
+            `arn:aws:secretsmanager:${props.env!.region}:${
+              props.env!.account
+            }:secret:DOCKER_ACCESS_TOKEN`,
+          ],
+          actions: [
+            "secretsmanager:GetSecretValue",
+            "secretsmanager:GetResourcePolicy",
+            "secretsmanager:DescribeSecret",
+            "secretsmanager:ListSecretVersionIds",
+          ],
           effect: cdk.aws_iam.Effect.ALLOW,
         }),
       ],
