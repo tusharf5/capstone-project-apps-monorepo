@@ -43,7 +43,7 @@ export class CiStack extends Stack {
       }),
     });
 
-    const buildStage = new CiStage(this, props.stage, {
+    const buildStage = new CiStage(this, "BuildServiceA", {
       env: { account: props.env!.account, region: props.env!.region },
       stage: props.stage,
     });
