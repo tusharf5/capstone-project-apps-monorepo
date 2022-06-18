@@ -22,18 +22,18 @@ export class CiStack extends Stack {
   constructor(scope: Construct, id: string, props: CiStackProps) {
     super(scope, id, props);
 
+    const sourceArtifact = CodePipelineSource.gitHub(
+      "tusharf5/capstone-project-apps-monorepo",
+      props.branch,
+      {
+        authentication: cdk.SecretValue.secretsManager("capstone-github-token"),
+      }
+    );
+
     const pipeline = new CodePipeline(this, "captstone-apps-pipeline", {
       pipelineName: `${props.stage}-captstone-apps-pipeline`,
       synth: new ShellStep("Synth", {
-        input: CodePipelineSource.gitHub(
-          "tusharf5/capstone-project-apps-monorepo",
-          props.branch,
-          {
-            authentication: cdk.SecretValue.secretsManager(
-              "capstone-github-token"
-            ),
-          }
-        ),
+        input: sourceArtifact,
         installCommands: ['echo "Synth installCommands"'],
         commands: [
           'echo "Synth commands"',
@@ -65,11 +65,23 @@ export class CiStack extends Stack {
     // valueFromLookup methods work by actualy fetching during the synth process
 
     const buildImage = new pipelines.CodeBuildStep("build-docker-image", {
+      input: sourceArtifact,
+      installCommands: [
+        `aws ecr get-login-password --region ${
+          props.env!.region
+        } | docker login --username AWS --password-stdin ${
+          props.env!.account
+        }.dkr.ecr.${props.env!.region}.amazonaws.com`,
+      ],
       commands: [
         'echo "I will build docker"',
-        `echo $(aws --region=${
+        `REPO_URI=$(aws --region=${
           props.env!.region
         } ssm get-parameter --name "${`/${props.stage}/service-a/repo-uri`}" --with-decryption --output text --query Parameter.Value)`,
+        `cd teams/capstone-app-devs/${props.stage}/service-a`,
+        `docker build -f src/Dockerfile -t service-a:latest .`,
+        `docker tag service-a:latest "$REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION"`,
+        `docker push "$REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION"`,
       ],
       buildEnvironment: {
         privileged: true,
