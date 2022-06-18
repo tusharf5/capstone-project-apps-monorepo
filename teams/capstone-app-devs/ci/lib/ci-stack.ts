@@ -83,6 +83,10 @@ export class CiStack extends Stack {
       ],
     });
 
+    const buildWave = pipeline.addWave("build-docker");
+
+    buildWave.addPost(buildImage);
+
     // addStage no longer means "add a CodePipeline Stage to the pipeline" --
     // it means: "deploy all stacks inside a cdk.Stage".
 
