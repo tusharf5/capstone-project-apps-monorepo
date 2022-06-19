@@ -30,6 +30,21 @@ export class CiStack extends Stack {
       }
     );
 
+    /* @example
+     * // Access the CommitId of a GitHub source in the synth
+     * const source = pipelines.CodePipelineSource.gitHub('owner/repo', 'main');
+     *
+     * const pipeline = new pipelines.CodePipeline(scope, 'MyPipeline', {
+     *   synth: new pipelines.ShellStep('Synth', {
+     *     input: source,
+     *     commands: [],
+     *     env: {
+     *       'COMMIT_ID': source.sourceAttribute('CommitId'),
+     *     }
+     *   })
+     * });
+     */
+
     const pipeline = new CodePipeline(this, "captstone-apps-pipeline", {
       pipelineName: `${props.stage}-captstone-apps-pipeline`,
       synth: new ShellStep("Synth", {
@@ -49,6 +64,21 @@ export class CiStack extends Stack {
       env: { account: props.env!.account, region: props.env!.region },
       stage: props.stage,
     });
+
+    /* // Access the output of one CodeBuildStep in another CodeBuildStep
+     * declare const pipeline: pipelines.CodePipeline;
+     *
+     * const step1 = new pipelines.CodeBuildStep('Step1', {
+     *   commands: ['export MY_VAR=hello'],
+     * });
+     *
+     * const step2 = new pipelines.CodeBuildStep('Step2', {
+     *   env: {
+     *     IMPORTED_VAR: step1.exportedVariable('MY_VAR'),
+     *   },
+     *   commands: ['echo $IMPORTED_VAR'],
+     * });
+     */
 
     pipeline.addStage(infraStage);
 
@@ -84,6 +114,7 @@ export class CiStack extends Stack {
           props.env!.account
         }.dkr.ecr.${props.env!.region}.amazonaws.com`,
         `docker push "$REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION"`,
+        `export SERVICE_A_IMAGE_URI="$REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION"`,
       ],
       buildEnvironment: {
         privileged: true,
@@ -127,15 +158,28 @@ export class CiStack extends Stack {
     // it means: "deploy all stacks inside a cdk.Stage".
     // To add a stage use waves with post, pre
 
-    const trigger = new pipelines.ShellStep("trigger-manifest-changes", {
-      commands: ['echo " I will trigger another pipeline "'],
-    });
+    const trigger = new pipelines.ShellStep(
+      "upload-service-a-deployment-config",
+      {
+        env: {
+          SERVICE_A_IMAGE_URI: buildImage.exportedVariable(
+            "SERVICE_A_IMAGE_URI"
+          ),
+        },
+        commands: [
+          `touch config.json`,
+          `echo "{ \"serviceA\": { \"dockerImageURI\": \"$SERVICE_A_IMAGE_URI\" } }" > config.json`,
+          `cat config.json`,
+          `aws s3 cp config.json s3://capstone-tusharf5-pipeline-assets-bucket/${props.stage}/service-a/config.json`,
+        ],
+      }
+    );
 
     // pipeline
     //   .addWave("manual-approval")
     //   .addPre(new pipelines.ManualApprovalStep("manual-approval"));
 
-    const triggerWave = pipeline.addWave("trigger-next");
+    const triggerWave = pipeline.addWave("upload-deployment-config");
 
     triggerWave.addPost(trigger);
 
