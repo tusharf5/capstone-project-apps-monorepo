@@ -171,7 +171,8 @@ export class CiStack extends Stack {
           `touch config.json`,
           `echo \''{"serviceA":{"dockerImageURI":"'"$SERVICE_A_IMAGE_URI"'"}}'\' > config.json`,
           `cat config.json`,
-          `aws s3 cp config.json s3://capstone-tusharf5-pipeline-assets-bucket/${props.stage}/service-a/config.json`,
+          `zip config.zip config.json`,
+          `aws s3 cp config.zip s3://capstone-tusharf5-pipeline-assets-bucket/${props.stage}/service-a/config.zip`,
         ],
         rolePolicyStatements: [
           new cdk.aws_iam.PolicyStatement({
