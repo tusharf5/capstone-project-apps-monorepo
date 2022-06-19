@@ -169,7 +169,7 @@ export class CiStack extends Stack {
         },
         commands: [
           `touch config.json`,
-          `echo \''{"serviceA":{"dockerImageURI":"'"$SERVICE_A_IMAGE_URI"'"}}'\' > config.json`,
+          `echo '{"serviceA":{"dockerImageURI":"'"$SERVICE_A_IMAGE_URI"'"}}' > config.json`,
           `cat config.json`,
           `zip config.zip config.json`,
           `aws s3 cp config.zip s3://capstone-tusharf5-pipeline-assets-bucket/${props.stage}/service-a/config.zip`,
