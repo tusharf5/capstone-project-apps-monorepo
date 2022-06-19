@@ -1,7 +1,7 @@
 console.log("Init");
 
 const id = setInterval(() => {
-  console.log("Running");
+  console.log("Running forever");
 }, 1000 * 60 * 60);
 
 process.once("SIGTERM", function (code) {
