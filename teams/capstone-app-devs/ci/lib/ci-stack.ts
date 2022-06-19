@@ -131,9 +131,9 @@ export class CiStack extends Stack {
       commands: ['echo " I will trigger another pipeline "'],
     });
 
-    pipeline
-      .addWave("manual-approval")
-      .addPre(new pipelines.ManualApprovalStep("manual-approval"));
+    // pipeline
+    //   .addWave("manual-approval")
+    //   .addPre(new pipelines.ManualApprovalStep("manual-approval"));
 
     const triggerWave = pipeline.addWave("trigger-next");
 
