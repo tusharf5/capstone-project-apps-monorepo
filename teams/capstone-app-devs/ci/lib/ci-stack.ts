@@ -158,9 +158,10 @@ export class CiStack extends Stack {
     // it means: "deploy all stacks inside a cdk.Stage".
     // To add a stage use waves with post, pre
 
-    const trigger = new pipelines.ShellStep(
+    const trigger = new pipelines.CodeBuildStep(
       "upload-service-a-deployment-config",
       {
+        input: sourceArtifact,
         env: {
           SERVICE_A_IMAGE_URI: buildImage.exportedVariable(
             "SERVICE_A_IMAGE_URI"
@@ -171,6 +172,15 @@ export class CiStack extends Stack {
           `echo "{ \"serviceA\": { \"dockerImageURI\": \"$SERVICE_A_IMAGE_URI\" } }" > config.json`,
           `cat config.json`,
           `aws s3 cp config.json s3://capstone-tusharf5-pipeline-assets-bucket/${props.stage}/service-a/config.json`,
+        ],
+        rolePolicyStatements: [
+          new cdk.aws_iam.PolicyStatement({
+            resources: [
+              `arn:aws:s3:::capstone-tusharf5-pipeline-assets-bucket/${props.stage}/service-a/*`,
+            ],
+            actions: ["s3:PutObject"],
+            effect: cdk.aws_iam.Effect.ALLOW,
+          }),
         ],
       }
     );
