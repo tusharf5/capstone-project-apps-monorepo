@@ -1,7 +1,7 @@
 console.log("Init");
 
 const id = setInterval(() => {
-  console.log("Ran");
+  console.log("Ran again");
 }, 1000 * 60 * 60);
 
 process.once("SIGTERM", function (code) {
