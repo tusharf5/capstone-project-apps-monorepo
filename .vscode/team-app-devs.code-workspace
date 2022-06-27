@@ -5,12 +5,12 @@
       "path": "../"
     },
     {
-      "name": "@@app-devs/ci",
+      "name": "@@ci",
       "path": "../teams/capstone-app-devs/ci"
     },
     {
-      "name": "@@app-devs/dev/service-a",
-      "path": "../teams/capstone-app-devs/dev/service-a"
+      "name": "@@apps/bff-api",
+      "path": "../teams/capstone-app-devs/apps/bff-api"
     }
   ],
   "settings": {
@@ -97,6 +97,11 @@
     "prettier.singleQuote": true,
     "prettier.trailingComma": "all",
     "yaml.format.singleQuote": true,
-    "yaml.validate": false
+    "yaml.validate": false,
+    "workbench.colorCustomizations": {
+      "activityBar.background": "#481460",
+      "titleBar.activeBackground": "#651B86",
+      "titleBar.activeForeground": "#FDFCFE"
+    }
   }
 }

@@ -60,7 +60,7 @@ export class CiStack extends Stack {
       }),
     });
 
-    const infraStage = new CiStage(this, "service-a-resources", {
+    const infraStage = new CiStage(this, "bff-api-resources", {
       env: { account: props.env!.account, region: props.env!.region },
       stage: props.stage,
     });
@@ -100,21 +100,21 @@ export class CiStack extends Stack {
         'echo "I will build docker"',
         `REPO_URI=$(aws --region=${
           props.env!.region
-        } ssm get-parameter --name "${`/${props.stage}/service-a/repo-uri`}" --with-decryption --output text --query Parameter.Value)`,
-        `cd teams/capstone-app-devs/${props.stage}/service-a`,
+        } ssm get-parameter --name "${`/${props.stage}/bff-api/repo-uri`}" --with-decryption --output text --query Parameter.Value)`,
+        `cd teams/capstone-app-devs/bff-api`,
         `DOCKER_USERNAME=$(aws secretsmanager get-secret-value --secret-id "DOCKER_USERNAME" --output text --query SecretString)`,
         `DOCKER_ACCESS_TOKEN=$(aws secretsmanager get-secret-value --secret-id "DOCKER_ACCESS_TOKEN" --output text --query SecretString)`,
         `echo $DOCKER_ACCESS_TOKEN | docker login -u $DOCKER_USERNAME --password-stdin`,
-        `docker build -f docker/Dockerfile -t service-a:latest .`,
+        `docker build -f docker/Dockerfile -t bff-api:latest .`,
         `docker logout`,
-        `docker tag service-a:latest "$REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION"`,
+        `docker tag bff-api:latest "$REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION"`,
         `aws ecr get-login-password --region ${
           props.env!.region
         } | docker login --username AWS --password-stdin ${
           props.env!.account
         }.dkr.ecr.${props.env!.region}.amazonaws.com`,
         `docker push "$REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION"`,
-        `export SERVICE_A_IMAGE_URI="$REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION"`,
+        `export DOCKER_IMAGE_URI="$REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION"`,
       ],
       buildEnvironment: {
         privileged: true,
@@ -159,25 +159,23 @@ export class CiStack extends Stack {
     // To add a stage use waves with post, pre
 
     const trigger = new pipelines.CodeBuildStep(
-      "upload-service-a-deployment-config",
+      "upload-bff-api-deployment-config",
       {
         input: sourceArtifact,
         env: {
-          SERVICE_A_IMAGE_URI: buildImage.exportedVariable(
-            "SERVICE_A_IMAGE_URI"
-          ),
+          DOCKER_IMAGE_URI: buildImage.exportedVariable("DOCKER_IMAGE_URI"),
         },
         commands: [
           `touch config.json`,
-          `echo '{"serviceA":{"dockerImageURI":"'"$SERVICE_A_IMAGE_URI"'"}}' > config.json`,
+          `echo '{"bffApi":{"dockerImageURI":"'"$DOCKER_IMAGE_URI"'"}}' > config.json`,
           `cat config.json`,
           `zip config.zip config.json`,
-          `aws s3 cp config.zip s3://capstone-tusharf5-pipeline-assets-bucket/${props.stage}/service-a/config.zip`,
+          `aws s3 cp config.zip s3://capstone-tusharf5-pipeline-assets-bucket/${props.stage}/bff-api/config.zip`,
         ],
         rolePolicyStatements: [
           new cdk.aws_iam.PolicyStatement({
             resources: [
-              `arn:aws:s3:::capstone-tusharf5-pipeline-assets-bucket/${props.stage}/service-a/*`,
+              `arn:aws:s3:::capstone-tusharf5-pipeline-assets-bucket/${props.stage}/bff-api/*`,
             ],
             actions: ["s3:PutObject"],
             effect: cdk.aws_iam.Effect.ALLOW,

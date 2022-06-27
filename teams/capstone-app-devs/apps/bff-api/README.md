@@ -1,4 +1,4 @@
-# service-a
+# bff-api
 
 ## Installation
 

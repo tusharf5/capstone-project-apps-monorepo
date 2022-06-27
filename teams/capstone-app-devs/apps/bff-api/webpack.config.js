@@ -53,7 +53,7 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
     new DefinePlugin({
-      GLOBAL_VAR_SERVICE_NAME: JSON.stringify('service-a'),
+      GLOBAL_VAR_SERVICE_NAME: JSON.stringify('bff-api'),
       GLOBAL_VAR_NODE_ENV: JSON.stringify(process.env.NODE_ENV),
       GLOBAL_VAR_REGION: JSON.stringify('us-east-2'),
     }),

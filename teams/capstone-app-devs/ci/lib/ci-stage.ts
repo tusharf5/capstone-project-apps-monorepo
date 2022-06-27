@@ -1,7 +1,7 @@
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 
-import { ServiceAStack } from "./service-a-stack";
+import { ServiceAStack } from "./bff-api-stack";
 
 interface StageProps extends cdk.StageProps {
   stage: string;
