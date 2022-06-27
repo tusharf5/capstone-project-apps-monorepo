@@ -101,7 +101,7 @@ export class CiStack extends Stack {
         `REPO_URI=$(aws --region=${
           props.env!.region
         } ssm get-parameter --name "${`/${props.stage}/bff-api/repo-uri`}" --with-decryption --output text --query Parameter.Value)`,
-        `cd teams/capstone-app-devs/bff-api`,
+        `cd teams/capstone-app-devs/apps/bff-api`,
         `DOCKER_USERNAME=$(aws secretsmanager get-secret-value --secret-id "DOCKER_USERNAME" --output text --query SecretString)`,
         `DOCKER_ACCESS_TOKEN=$(aws secretsmanager get-secret-value --secret-id "DOCKER_ACCESS_TOKEN" --output text --query SecretString)`,
         `echo $DOCKER_ACCESS_TOKEN | docker login -u $DOCKER_USERNAME --password-stdin`,
