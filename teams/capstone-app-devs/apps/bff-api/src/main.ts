@@ -35,6 +35,11 @@ process.on('exit', () => {
 });
 
 // eslint-disable-next-line require-await
+server.get('/bff/health-status', async (request, reply) => {
+  return reply.code(200).send({ message: 'success' });
+});
+
+// eslint-disable-next-line require-await
 server.get('/health-status', async (request, reply) => {
   return reply.code(200).send({ message: 'success' });
 });
