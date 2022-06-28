@@ -1,6 +1,6 @@
 import fastify from 'fastify';
 
-const server = fastify({ logger: false });
+const server = fastify({ logger: true });
 
 process.on('uncaughtException', () => {
   // eslint-disable-next-line no-console
