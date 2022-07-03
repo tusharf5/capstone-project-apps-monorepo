@@ -5,12 +5,12 @@
       "path": "../"
     },
     {
-      "name": "@@ci",
-      "path": "../teams/capstone-app-devs/ci"
+      "name": "@@frontend/ci",
+      "path": "../teams/frontend/ci"
     },
     {
-      "name": "@@apps/bff-api",
-      "path": "../teams/capstone-app-devs/apps/bff-api"
+      "name": "@@frontend/bff-api",
+      "path": "../teams/frontend/apps/bff-api"
     }
   ],
   "settings": {

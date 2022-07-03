@@ -7,7 +7,7 @@ interface Props {
   stage: string;
 }
 
-export class ServiceAStack extends cdk.Stack {
+export class BffApiStack extends cdk.Stack {
   public readonly serviceARepo: string;
 
   constructor(scope: Construct, id: string, props: Props) {

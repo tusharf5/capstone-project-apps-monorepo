@@ -34,6 +34,8 @@ COPY --chown=node:node . .
 
 RUN yarn build
 
+RUN rm -rf node_modules && \
+  yarn install --production --ignore-scripts
 
 ## Stage 3 (image ready for any env)
 FROM node:16.14-alpine AS final
