@@ -28,7 +28,7 @@ const environments = {
   },
 };
 
-new CiStack(app, "apps-ci-stack-dev", {
+new CiStack(app, "teams-frontend-apps", {
   stage: environments.dev.name,
   env: {
     region: environments.dev.region,
@@ -37,22 +37,22 @@ new CiStack(app, "apps-ci-stack-dev", {
   branch: "main",
 });
 
-new CiStack(app, "apps-ci-stack-test", {
-  stage: environments.test.name,
-  env: {
-    region: environments.test.region,
-    account: process.env.CDK_DEFAULT_ACCOUNT,
-  },
-  branch: "test",
-});
+// new CiStack(app, "apps-ci-stack-test", {
+//   stage: environments.test.name,
+//   env: {
+//     region: environments.test.region,
+//     account: process.env.CDK_DEFAULT_ACCOUNT,
+//   },
+//   branch: "test",
+// });
 
-new CiStack(app, "apps-ci-stack-prod", {
-  stage: environments.prod.name,
-  env: {
-    region: environments.prod.region,
-    account: process.env.CDK_DEFAULT_ACCOUNT,
-  },
-  branch: "prod",
-});
+// new CiStack(app, "apps-ci-stack-prod", {
+//   stage: environments.prod.name,
+//   env: {
+//     region: environments.prod.region,
+//     account: process.env.CDK_DEFAULT_ACCOUNT,
+//   },
+//   branch: "prod",
+// });
 
 app.synth();
