@@ -14,6 +14,7 @@ export class CiStage extends cdk.Stage {
     new BffApiStack(this, "core-stack", {
       stage: props.stage,
       region: props.env!.region!,
+      account: props.env?.account!,
     });
   }
 }
