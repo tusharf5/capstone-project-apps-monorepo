@@ -41,7 +41,7 @@ export class BffApiStack extends cdk.Stack {
     const clusteroidcurl = new AwsCustomResource(this, "get-cluster-oids", {
       onCreate: {
         physicalResourceId: PhysicalResourceId.fromResponse("cluster.arn"),
-        service: "eks",
+        service: "EKS",
         action: "describeCluster",
         parameters: {
           name: `${props.stage}-capstone`,
@@ -50,7 +50,7 @@ export class BffApiStack extends cdk.Stack {
       },
       onUpdate: {
         physicalResourceId: PhysicalResourceId.fromResponse("cluster.arn"),
-        service: "eks",
+        service: "EKS",
         action: "describeCluster",
         parameters: {
           name: `${props.stage}-capstone`,
