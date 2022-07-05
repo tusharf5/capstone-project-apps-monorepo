@@ -68,9 +68,9 @@ export class BffApiStack extends cdk.Stack {
 
     // iam policy for bff pods service account
 
-    const bucket = new cdk.aws_s3.Bucket(this, "asset-bucket", {
+    const bucket = new cdk.aws_s3.Bucket(this, "team-frontend-assets-bucket", {
       encryption: BucketEncryption.S3_MANAGED,
-      bucketName: `team-frontend-bucket-${props.stage}`,
+      bucketName: `team-frontend-assets-${props.stage}`,
       versioned: false,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       eventBridgeEnabled: true,
