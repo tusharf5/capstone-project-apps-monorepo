@@ -55,7 +55,7 @@ export class BffApiStack extends cdk.Stack {
         parameters: {
           name: `${props.stage}-capstone`,
         },
-        outputPaths: ["cluster.identity.oidc"],
+        outputPaths: ["cluster.identity.oidc.issuer"],
       },
       policy: AwsCustomResourcePolicy.fromStatements([
         new cdk.aws_iam.PolicyStatement({
@@ -64,7 +64,7 @@ export class BffApiStack extends cdk.Stack {
           resources: ["*"],
         }),
       ]),
-    }).getResponseField("issuer");
+    }).getResponseField("cluster.identity.oidc.issuer");
 
     // iam policy for bff pods service account
 
