@@ -66,6 +66,8 @@ export class BffApiStack extends cdk.Stack {
       ]),
     }).getResponseField("cluster.identity.oidc.issuer");
 
+    const oidcId = /id\/(.+?)$/.exec(clusteroidcurl)?.[1];
+
     // iam policy for bff pods service account
 
     const bucket = new cdk.aws_s3.Bucket(this, "team-frontend-assets-bucket", {
@@ -89,8 +91,13 @@ export class BffApiStack extends cdk.Stack {
       "pod-service-account-linked-role",
       {
         assumedBy: new FederatedPrincipal(
-          `arn:aws:iam::${props.account}:oidc-provider/oidc.eks.${props.region}.amazonaws.com/id/${clusteroidcurl}`,
-          {},
+          `arn:aws:iam::${props.account}:oidc-provider/oidc.eks.${props.region}.amazonaws.com/id/${oidcId}`,
+          {
+            StringEquals: {
+              [`oidc.eks.${props.region}.amazonaws.com/id/${oidcId}:sub`]:
+                "system:serviceaccount:team-frontend:*",
+            },
+          },
           "sts:AssumeRoleWithWebIdentity"
         ),
         inlinePolicies: {
