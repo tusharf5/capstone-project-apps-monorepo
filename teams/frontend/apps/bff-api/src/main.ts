@@ -1,5 +1,9 @@
 import fastify from 'fastify';
 
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+
+const s3Client = new S3Client({ region: 'us-west-2' });
+
 const server = fastify({ logger: true });
 
 process.on('uncaughtException', () => {
@@ -42,6 +46,23 @@ server.get('/bff/health-status', async (request, reply) => {
 // eslint-disable-next-line require-await
 server.get('/health-status', async (request, reply) => {
   return reply.code(200).send({ message: 'success' });
+});
+
+// eslint-disable-next-line require-await
+server.get('/test', async (request, reply) => {
+  try {
+    await s3Client.send(
+      // TODO add env and region to this
+      new PutObjectCommand({
+        Bucket: 'team-frontend-assets-dev',
+        Body: Buffer.from('{}'),
+        Key: 'file.json',
+      })
+    );
+    return reply.code(200).send({ message: 'okay' });
+  } catch (err) {
+    return reply.code(500).send({ message: 'error', error: (err as Error).message });
+  }
 });
 
 /**
