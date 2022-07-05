@@ -90,7 +90,8 @@ export class BffApiStack extends cdk.Stack {
       {
         assumedBy: new FederatedPrincipal(
           `arn:aws:iam::${props.account}:oidc-provider/oidc.eks.${props.region}.amazonaws.com/id/${clusteroidcurl}`,
-          {}
+          {},
+          "sts:AssumeRoleWithWebIdentity"
         ),
         inlinePolicies: {
           adis: new cdk.aws_iam.PolicyDocument({
