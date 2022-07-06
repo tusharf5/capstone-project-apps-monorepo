@@ -38,35 +38,36 @@ export class BffApiStack extends cdk.Stack {
       stringValue: serviceARepo.repositoryArn,
     });
 
-    const clusteroidcurl = new AwsCustomResource(this, "get-cluster-oids", {
-      onCreate: {
-        physicalResourceId: PhysicalResourceId.fromResponse("cluster.arn"),
-        service: "EKS",
-        action: "describeCluster",
-        parameters: {
-          name: `${props.stage}-capstone`,
-        },
-        outputPaths: ["cluster.identity.oidc.issuer"],
-      },
-      onUpdate: {
-        physicalResourceId: PhysicalResourceId.fromResponse("cluster.arn"),
-        service: "EKS",
-        action: "describeCluster",
-        parameters: {
-          name: `${props.stage}-capstone`,
-        },
-        outputPaths: ["cluster.identity.oidc.issuer"],
-      },
-      policy: AwsCustomResourcePolicy.fromStatements([
-        new cdk.aws_iam.PolicyStatement({
-          effect: cdk.aws_iam.Effect.ALLOW,
-          actions: ["eks:DescribeCluster"],
-          resources: ["*"],
-        }),
-      ]),
-    }).getResponseField("cluster.identity.oidc.issuer");
+    // const clusteroidcurl = new AwsCustomResource(this, "get-cluster-oids", {
+    //   onCreate: {
+    //     physicalResourceId: PhysicalResourceId.fromResponse("cluster.arn"),
+    //     service: "EKS",
+    //     action: "describeCluster",
+    //     parameters: {
+    //       name: `${props.stage}-capstone`,
+    //     },
+    //     outputPaths: ["cluster.identity.oidc.issuer"],
+    //   },
+    //   onUpdate: {
+    //     physicalResourceId: PhysicalResourceId.fromResponse("cluster.arn"),
+    //     service: "EKS",
+    //     action: "describeCluster",
+    //     parameters: {
+    //       name: `${props.stage}-capstone`,
+    //     },
+    //     outputPaths: ["cluster.identity.oidc.issuer"],
+    //   },
+    //   policy: AwsCustomResourcePolicy.fromStatements([
+    //     new cdk.aws_iam.PolicyStatement({
+    //       effect: cdk.aws_iam.Effect.ALLOW,
+    //       actions: ["eks:DescribeCluster"],
+    //       resources: ["*"],
+    //     }),
+    //   ]),
+    // }).getResponseField("cluster.identity.oidc.issuer");
 
-    const oidcId = /id\/(.+?)$/.exec(clusteroidcurl)?.[1];
+    const oidcId =
+      props.stage === "dev" ? "923682B311D56C87B52DE3DF68F51D13" : "";
 
     // iam policy for bff pods service account
 
