@@ -66,8 +66,10 @@ export class BffApiStack extends cdk.Stack {
     //   ]),
     // }).getResponseField("cluster.identity.oidc.issuer");
 
-    const oidcId =
-      props.stage === "dev" ? "923682B311D56C87B52DE3DF68F51D13" : "";
+    const oidcProvider =
+      props.stage === "dev"
+        ? "oidc.eks.us-west-2.amazonaws.com/id/923682B311D56C87B52DE3DF68F51D13"
+        : "";
 
     // iam policy for bff pods service account
 
@@ -92,11 +94,12 @@ export class BffApiStack extends cdk.Stack {
       "pod-service-account-linked-role",
       {
         assumedBy: new FederatedPrincipal(
-          `arn:aws:iam::${props.account}:oidc-provider/oidc.eks.${props.region}.amazonaws.com/id/${oidcId}`,
+          `arn:aws:iam::${props.account}:oidc-provider/${oidcProvider}`,
           {
             StringEquals: {
-              [`oidc.eks.${props.region}.amazonaws.com/id/${oidcId}:sub`]:
-                "system:serviceaccount:team-frontend:*",
+              [`${oidcProvider}:aud`]: "sts.amazonaws.com",
+              [`${oidcProvider}:sub`]:
+                "system:serviceaccount:team-frontend:bff-api-pods-sa",
             },
           },
           "sts:AssumeRoleWithWebIdentity"
