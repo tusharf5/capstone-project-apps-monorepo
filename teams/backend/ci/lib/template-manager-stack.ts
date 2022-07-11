@@ -21,61 +21,35 @@ export class BffApiStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: Props) {
     super(scope, id);
 
-    const serviceARepo = new cdk.aws_ecr.Repository(this, "bff-api-repo", {
-      imageScanOnPush: true,
-      repositoryName: `${props.stage}-bff-api`,
-    });
+    const serviceARepo = new cdk.aws_ecr.Repository(
+      this,
+      "template-manager-repo",
+      {
+        imageScanOnPush: true,
+        repositoryName: `${props.stage}-template-manager`,
+      }
+    );
 
-    new cdk.aws_ssm.StringParameter(this, "bff-api-repo-uri-param", {
-      parameterName: `/${props.stage}/bff-api/repo-uri`,
+    new cdk.aws_ssm.StringParameter(this, "template-manager-repo-uri-param", {
+      parameterName: `/${props.stage}/template-manager/repo-uri`,
       type: ParameterType.STRING,
       stringValue: serviceARepo.repositoryUri,
     });
 
-    new cdk.aws_ssm.StringParameter(this, "bff-api-repo-arn-param", {
-      parameterName: `/${props.stage}/bff-api/repo-arn`,
+    new cdk.aws_ssm.StringParameter(this, "template-manager-repo-arn-param", {
+      parameterName: `/${props.stage}/template-manager/repo-arn`,
       type: ParameterType.STRING,
       stringValue: serviceARepo.repositoryArn,
     });
-
-    // const clusteroidcurl = new AwsCustomResource(this, "get-cluster-oids", {
-    //   onCreate: {
-    //     physicalResourceId: PhysicalResourceId.fromResponse("cluster.arn"),
-    //     service: "EKS",
-    //     action: "describeCluster",
-    //     parameters: {
-    //       name: `${props.stage}-capstone`,
-    //     },
-    //     outputPaths: ["cluster.identity.oidc.issuer"],
-    //   },
-    //   onUpdate: {
-    //     physicalResourceId: PhysicalResourceId.fromResponse("cluster.arn"),
-    //     service: "EKS",
-    //     action: "describeCluster",
-    //     parameters: {
-    //       name: `${props.stage}-capstone`,
-    //     },
-    //     outputPaths: ["cluster.identity.oidc.issuer"],
-    //   },
-    //   policy: AwsCustomResourcePolicy.fromStatements([
-    //     new cdk.aws_iam.PolicyStatement({
-    //       effect: cdk.aws_iam.Effect.ALLOW,
-    //       actions: ["eks:DescribeCluster"],
-    //       resources: ["*"],
-    //     }),
-    //   ]),
-    // }).getResponseField("cluster.identity.oidc.issuer");
 
     const oidcProvider =
       props.stage === "dev"
         ? "oidc.eks.us-west-2.amazonaws.com/id/089129A371F0ED50EE954BB752B8854C"
         : "";
 
-    // iam policy for bff pods service account
-
-    const bucket = new cdk.aws_s3.Bucket(this, "team-frontend-assets-bucket", {
+    const bucket = new cdk.aws_s3.Bucket(this, "team-backend-assets-bucket", {
       encryption: BucketEncryption.S3_MANAGED,
-      bucketName: `team-frontend-assets-${props.stage}`,
+      bucketName: `team-backend-assets-${props.stage}`,
       versioned: false,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       eventBridgeEnabled: true,
@@ -99,7 +73,7 @@ export class BffApiStack extends cdk.Stack {
             StringEquals: {
               [`${oidcProvider}:aud`]: "sts.amazonaws.com",
               [`${oidcProvider}:sub`]:
-                "system:serviceaccount:team-frontend:bff-api-pods-sa",
+                "system:serviceaccount:team-backend:template-manager-pods-sa",
             },
           },
           "sts:AssumeRoleWithWebIdentity"

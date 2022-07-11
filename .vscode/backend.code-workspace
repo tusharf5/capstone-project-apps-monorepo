@@ -6,11 +6,11 @@
     },
     {
       "name": "@@cdk/ci",
-      "path": "../teams/frontend/ci"
+      "path": "../teams/backend/ci"
     },
     {
-      "name": "@@source/bff-api",
-      "path": "../teams/frontend/apps/bff-api"
+      "name": "@@source/template-manager",
+      "path": "../teams/backend/apps/template-manager"
     }
   ],
   "settings": {
