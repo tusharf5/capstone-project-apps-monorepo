@@ -170,12 +170,12 @@ export class CiStack extends Stack {
           `echo '{"dockerImageURI":"'"$DOCKER_IMAGE_URI"'"}' > config.json`,
           `cat config.json`,
           `zip config.zip config.json`,
-          `aws s3 cp config.zip s3://capstone-tusharf5-pipeline-assets-bucket-${props.stage}/frontend/apps/bff-api/config.zip`,
+          `aws s3 cp config.zip s3://capstone-tusharf5-assets-bucket-${props.stage}/frontend/apps/bff-api/config.zip`,
         ],
         rolePolicyStatements: [
           new cdk.aws_iam.PolicyStatement({
             resources: [
-              `arn:aws:s3:::capstone-tusharf5-pipeline-assets-bucket-${props.stage}/frontend/*`,
+              `arn:aws:s3:::capstone-tusharf5-assets-bucket-${props.stage}/frontend/*`,
             ],
             actions: ["s3:PutObject"],
             effect: cdk.aws_iam.Effect.ALLOW,
