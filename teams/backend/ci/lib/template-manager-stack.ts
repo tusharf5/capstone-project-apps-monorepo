@@ -92,7 +92,7 @@ export class BffApiStack extends cdk.Stack {
       }
     );
 
-    new cdk.CfnOutput(this, "podRole", {
+    new cdk.CfnOutput(this, "podRoleBackend", {
       value: iamrole.roleArn,
       description: "The arn of the pod role",
       exportName: "podRole",
