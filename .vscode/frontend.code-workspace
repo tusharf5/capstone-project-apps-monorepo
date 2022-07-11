@@ -5,11 +5,11 @@
       "path": "../"
     },
     {
-      "name": "@@frontend/ci",
+      "name": "@@frontend/cdk/ci",
       "path": "../teams/frontend/ci"
     },
     {
-      "name": "@@frontend/bff-api",
+      "name": "@@frontend/source/bff-api",
       "path": "../teams/frontend/apps/bff-api"
     }
   ],

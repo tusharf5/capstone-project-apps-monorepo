@@ -45,7 +45,7 @@ export class CiStack extends Stack {
      * });
      */
 
-    const pipeline = new CodePipeline(this, "captstone-apps-pipeline", {
+    const pipeline = new CodePipeline(this, "applications-pipeline", {
       pipelineName: `${props.stage}-${id}`,
       synth: new ShellStep("Synth", {
         input: sourceArtifact,

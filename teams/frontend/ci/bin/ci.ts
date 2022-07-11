@@ -28,7 +28,7 @@ const environments = {
   },
 };
 
-new CiStack(app, "teams-frontend-apps", {
+new CiStack(app, "teams-frontend-applications", {
   stage: environments.dev.name,
   env: {
     region: environments.dev.region,
