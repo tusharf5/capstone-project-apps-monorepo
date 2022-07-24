@@ -17,7 +17,8 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.121.0",
-    "fastify": "4.1.0"
+    "fastify": "4.1.0",
+    "handlebars": "4.7.7"
   },
   "devDependencies": {
     "@aws-sdk/types": "3.110.0",

@@ -105,7 +105,7 @@ export class CiStack extends Stack {
         `DOCKER_USERNAME=$(aws secretsmanager get-secret-value --secret-id "DOCKER_USERNAME" --output text --query SecretString)`,
         `DOCKER_ACCESS_TOKEN=$(aws secretsmanager get-secret-value --secret-id "DOCKER_ACCESS_TOKEN" --output text --query SecretString)`,
         `echo $DOCKER_ACCESS_TOKEN | docker login -u $DOCKER_USERNAME --password-stdin`,
-        `docker build -f docker/Dockerfile -t bff-api:latest .`,
+        `docker build --build-arg NODE_ENV=${props.stage} -f docker/Dockerfile -t bff-api:latest .`,
         `docker logout`,
         `docker tag bff-api:latest "$REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION"`,
         `aws ecr get-login-password --region ${

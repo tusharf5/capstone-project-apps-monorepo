@@ -11,6 +11,10 @@
     {
       "name": "@@source/bff-api",
       "path": "../teams/frontend/apps/bff-api"
+    },
+    {
+      "name": "@@source/webapp",
+      "path": "../teams/frontend/apps/front"
     }
   ],
   "settings": {

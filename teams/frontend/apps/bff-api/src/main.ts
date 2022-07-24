@@ -1,6 +1,7 @@
 import fastify from 'fastify';
 
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
 const s3Client = new S3Client({ region: 'us-west-2' });
 
@@ -49,17 +50,14 @@ server.get('/health-status', async (request, reply) => {
 });
 
 // eslint-disable-next-line require-await
-server.get('/test', async (request, reply) => {
+server.get('/bff/upload-file', async (request, reply) => {
   try {
-    await s3Client.send(
-      // TODO add env and region to this
-      new PutObjectCommand({
-        Bucket: 'team-frontend-assets-dev',
-        Body: Buffer.from('{}'),
-        Key: 'file.json',
-      })
-    );
-    return reply.code(200).send({ message: 'okay' });
+    const command = new PutObjectCommand({
+      Bucket: `team-frontend-assets-${GLOBAL_VAR_NODE_ENV}`,
+      Key: `recipients/${Date.now()}.csv`,
+    });
+    const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+    return reply.code(200).send({ message: 'okay', url });
   } catch (err) {
     return reply.code(500).send({ message: 'error', error: (err as Error).message });
   }
