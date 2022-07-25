@@ -36,5 +36,3 @@ new CiStack(app, "teams-backend-applications", {
   },
   branch: "main",
 });
-
-app.synth();

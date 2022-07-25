@@ -12,5 +12,11 @@ aws eks describe-cluster \
 ```
 
 ```shell
+cd teams/frontend/ci
 cdk deploy teams-frontend-applications
+```
+
+```shell
+cd teams/backend/ci
+cdk deploy teams-backend-applications
 ```

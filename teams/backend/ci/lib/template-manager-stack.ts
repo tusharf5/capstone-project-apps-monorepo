@@ -44,24 +44,8 @@ export class BffApiStack extends cdk.Stack {
 
     const oidcProvider =
       props.stage === "dev"
-        ? "oidc.eks.us-west-2.amazonaws.com/id/089129A371F0ED50EE954BB752B8854C"
+        ? "oidc.eks.us-west-2.amazonaws.com/id/C92FB9F4B3CC89B5B092C5DA11CBBBF1"
         : "";
-
-    const bucket = new cdk.aws_s3.Bucket(this, "team-backend-assets-bucket", {
-      encryption: BucketEncryption.S3_MANAGED,
-      bucketName: `team-backend-assets-${props.stage}`,
-      versioned: false,
-      blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
-      eventBridgeEnabled: true,
-    });
-
-    const bucketPolicy = AwsCustomResourcePolicy.fromStatements([
-      new cdk.aws_iam.PolicyStatement({
-        effect: cdk.aws_iam.Effect.ALLOW,
-        actions: ["s3:PutObject"],
-        resources: ["*"],
-      }),
-    ]);
 
     const iamrole = new cdk.aws_iam.Role(
       this,
@@ -78,17 +62,6 @@ export class BffApiStack extends cdk.Stack {
           },
           "sts:AssumeRoleWithWebIdentity"
         ),
-        inlinePolicies: {
-          adis: new cdk.aws_iam.PolicyDocument({
-            statements: [
-              new cdk.aws_iam.PolicyStatement({
-                effect: cdk.aws_iam.Effect.ALLOW,
-                actions: ["s3:PutObject"],
-                resources: ["*"],
-              }),
-            ],
-          }),
-        },
       }
     );
 
