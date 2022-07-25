@@ -68,7 +68,7 @@ export class BffApiStack extends cdk.Stack {
 
     const oidcProvider =
       props.stage === "dev"
-        ? "oidc.eks.us-west-2.amazonaws.com/id/089129A371F0ED50EE954BB752B8854C"
+        ? "oidc.eks.us-west-2.amazonaws.com/id/C92FB9F4B3CC89B5B092C5DA11CBBBF1"
         : "";
 
     // iam policy for bff pods service account
