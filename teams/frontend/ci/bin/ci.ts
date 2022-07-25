@@ -55,4 +55,4 @@ new CiStack(app, "teams-frontend-applications", {
 //   branch: "prod",
 // });
 
-app.synth();
+// app.synth();
