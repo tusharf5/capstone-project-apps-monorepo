@@ -10,3 +10,7 @@ aws eks describe-cluster \
        --query cluster.identity.oidc.issuer \
       --output text
 ```
+
+```
+cdk deploy teams-frontend-applications
+```

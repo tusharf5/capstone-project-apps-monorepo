@@ -11,7 +11,7 @@
     "cdk": "cdk"
   },
   "dependencies": {
-    "aws-cdk-lib": "2.25.0",
+    "aws-cdk-lib": "2.33.0",
     "lodash": "4.17.21",
     "source-map-support": "0.5.21",
     "ts-md5": "1.2.11",
