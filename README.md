@@ -11,6 +11,6 @@ aws eks describe-cluster \
       --output text
 ```
 
-```
+```shell
 cdk deploy teams-frontend-applications
 ```
