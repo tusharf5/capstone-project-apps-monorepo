@@ -38,7 +38,10 @@ export class CiStack extends Stack {
         installCommands: ['echo "Synth installCommands"'],
         commands: [
           'echo "Synth commands"',
-          "cd teams/frontend/ci",
+          "cd teams/frontend/apps/front",
+          "yarn install",
+          "yarn build",
+          "cd ../../ci",
           "yarn install",
           "npx cdk synth",
         ],
@@ -60,7 +63,7 @@ export class CiStack extends Stack {
         REACT_APP_NODE_ENV: props.stage,
       },
       commands: [
-        'echo "Synth commands"',
+        'echo "Build app"',
         "cd teams/frontend/apps/front",
         "yarn install",
         "yarn build",
