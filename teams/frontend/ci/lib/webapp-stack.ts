@@ -20,6 +20,14 @@ export class Webapp extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
+    siteBucket.addToResourcePolicy(
+      new cdk.aws_iam.PolicyStatement({
+        resources: [siteBucket.arnForObjects("*"), siteBucket.bucketArn],
+        actions: ["s3:List*", "s3:Get*", "s3:Put*"],
+        principals: [new cdk.aws_iam.AnyPrincipal()],
+      })
+    );
+
     const siteDistribution = new cdk.aws_cloudfront.CloudFrontWebDistribution(
       this,
       "SiteDistribution",
