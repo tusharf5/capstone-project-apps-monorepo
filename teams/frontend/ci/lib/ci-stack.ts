@@ -9,7 +9,8 @@ import {
 import * as cdk from "aws-cdk-lib";
 import * as pipelines from "aws-cdk-lib/pipelines";
 
-import { CiStage } from "./ci-stage";
+import { CiStage } from "./ci-bff-api-stage";
+import { WebappStage } from "./ci-webapp-stage";
 
 interface CiStackProps extends StackProps {
   stage: string;
@@ -29,21 +30,6 @@ export class CiStack extends Stack {
         authentication: cdk.SecretValue.secretsManager("capstone-github-token"),
       }
     );
-
-    /* @example
-     * // Access the CommitId of a GitHub source in the synth
-     * const source = pipelines.CodePipelineSource.gitHub('owner/repo', 'main');
-     *
-     * const pipeline = new pipelines.CodePipeline(scope, 'MyPipeline', {
-     *   synth: new pipelines.ShellStep('Synth', {
-     *     input: source,
-     *     commands: [],
-     *     env: {
-     *       'COMMIT_ID': source.sourceAttribute('CommitId'),
-     *     }
-     *   })
-     * });
-     */
 
     const pipeline = new CodePipeline(this, "applications-pipeline", {
       pipelineName: `${props.stage}-${id}`,
@@ -65,22 +51,33 @@ export class CiStack extends Stack {
       stage: props.stage,
     });
 
-    /* // Access the output of one CodeBuildStep in another CodeBuildStep
-     * declare const pipeline: pipelines.CodePipeline;
-     *
-     * const step1 = new pipelines.CodeBuildStep('Step1', {
-     *   commands: ['export MY_VAR=hello'],
-     * });
-     *
-     * const step2 = new pipelines.CodeBuildStep('Step2', {
-     *   env: {
-     *     IMPORTED_VAR: step1.exportedVariable('MY_VAR'),
-     *   },
-     *   commands: ['echo $IMPORTED_VAR'],
-     * });
-     */
-
     pipeline.addStage(infraStage);
+
+    const webappStage = new WebappStage(this, "webapp-resources", {
+      env: { account: props.env!.account, region: props.env!.region },
+      stage: props.stage,
+    });
+
+    pipeline.addStage(webappStage);
+
+    const buildStep = new pipelines.CodeBuildStep("build-webapp-assets", {
+      input: sourceArtifact,
+      env: {
+        NODE_ENV: props.stage,
+        REACT_APP_NODE_ENV: props.stage,
+      },
+      commands: [
+        'echo "Synth commands"',
+        "cd teams/frontend/apps/front",
+        "yarn install",
+        "yarn build",
+      ],
+      rolePolicyStatements: [],
+    });
+
+    const buildStepWave = pipeline.addWave("build-webapp");
+
+    buildStepWave.addPost(buildStep);
 
     /**
      * CDK pipelines will generate CodeBuild projects for each ShellStep you use,
@@ -184,31 +181,8 @@ export class CiStack extends Stack {
       }
     );
 
-    // pipeline
-    //   .addWave("manual-approval")
-    //   .addPre(new pipelines.ManualApprovalStep("manual-approval"));
-
     const triggerWave = pipeline.addWave("upload-deployment-config");
 
     triggerWave.addPost(trigger);
-
-    // // Add our CodeBuild project to our CodePipeline
-    // const buildAction = new pipelines.CodeBuildStep("", {
-    //   input: CodePipelineSource.gitHub(
-    //     "tusharf5/capstone-project-apps-monorepo",
-    //     props.branch,
-    //     {
-    //       authentication: cdk.SecretValue.secretsManager(
-    //         "capstone-github-token"
-    //       ),
-    //     }
-    //   ),
-    //   commands: [],
-    // });
-
-    // CodeCommit repository that contains the Dockerfile used to build our ECR image:
-    // code_repo = new codecommit.Repository(this, "codeRepository", {
-    //   repositoryName: "container-image-repo",
-    // });
   }
 }
