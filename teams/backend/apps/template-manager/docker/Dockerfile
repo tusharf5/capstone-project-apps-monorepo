@@ -52,7 +52,6 @@ WORKDIR /usr/app
 
 COPY --from=build /usr/app/dist/  .
 COPY --from=build /usr/app/node_modules/  ./node_modules
-RUN chown node:node /data
 
 USER node
 
