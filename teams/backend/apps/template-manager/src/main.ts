@@ -59,7 +59,7 @@ server.post('/templates', async (request, reply) => {
     name: (request.body as any).name,
   };
   try {
-    await writeFile(`/data/templates/${body.name}`, Buffer.from(body.template), {
+    await writeFile(`/data/${body.name}`, Buffer.from(body.template), {
       encoding: 'utf8',
     });
     return reply.code(200).send({ message: 'success' });
@@ -76,7 +76,7 @@ server.post('/templates/render', async (request, reply) => {
     name: (request.body as any).name,
   };
   try {
-    const data = await readFile(`/data/templates/${body.name}`, {
+    const data = await readFile(`/data/${body.name}`, {
       encoding: 'utf8',
     });
     const html = handlebars.compile(data)(body.variables);
