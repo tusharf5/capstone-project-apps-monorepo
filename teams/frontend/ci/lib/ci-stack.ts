@@ -53,13 +53,6 @@ export class CiStack extends Stack {
 
     pipeline.addStage(infraStage);
 
-    const webappStage = new WebappStage(this, "webapp-resources", {
-      env: { account: props.env!.account, region: props.env!.region },
-      stage: props.stage,
-    });
-
-    pipeline.addStage(webappStage);
-
     const buildStep = new pipelines.CodeBuildStep("build-webapp-assets", {
       input: sourceArtifact,
       env: {
@@ -78,6 +71,13 @@ export class CiStack extends Stack {
     const buildStepWave = pipeline.addWave("build-webapp");
 
     buildStepWave.addPost(buildStep);
+
+    const webappStage = new WebappStage(this, "webapp-resources", {
+      env: { account: props.env!.account, region: props.env!.region },
+      stage: props.stage,
+    });
+
+    pipeline.addStage(webappStage);
 
     /**
      * CDK pipelines will generate CodeBuild projects for each ShellStep you use,
