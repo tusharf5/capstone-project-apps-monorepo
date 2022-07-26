@@ -43,7 +43,9 @@ export class Webapp extends cdk.Stack {
 
     //Deploy site to s3 ci/build
     new cdk.aws_s3_deployment.BucketDeployment(this, "Deployment", {
-      sources: [cdk.aws_s3_deployment.Source.asset("../../apps/front/build")],
+      sources: [
+        cdk.aws_s3_deployment.Source.asset("../../frontend/apps/front/build"),
+      ],
       destinationBucket: siteBucket,
       distribution: siteDistribution,
       distributionPaths: ["/*"],
