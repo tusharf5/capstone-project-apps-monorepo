@@ -1,4 +1,5 @@
 import fastify from 'fastify';
+import cors from '@fastify/cors';
 
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
@@ -7,6 +8,11 @@ import axios from 'axios';
 const s3Client = new S3Client({ region: 'us-west-2' });
 
 const server = fastify({ logger: true });
+
+server.register(cors, {
+  origin: '*',
+  credentials: true,
+});
 
 process.on('uncaughtException', () => {
   // eslint-disable-next-line no-console

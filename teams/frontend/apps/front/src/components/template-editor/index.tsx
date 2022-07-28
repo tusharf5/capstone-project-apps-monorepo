@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { TextInput, Checkbox, Button, Group, Textarea } from "@mantine/core";
 import { useForm } from "@mantine/form";
 
@@ -36,16 +36,38 @@ async function render(data: {
 }
 
 function TemplateEditor() {
-  const form = useForm({
+  const [rendered, setRendered] = useState("");
+  const submitForm = useForm({
     initialValues: {
-      email: "",
-      termsOfService: false,
-    },
-
-    validate: {
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
+      template: "",
+      template_name: "",
     },
   });
+
+  const renderForm = useForm({
+    initialValues: {
+      variables: "",
+      template_name: false,
+    },
+  });
+
+  async function onTemplateSubmit(val: any) {
+    const resp = await submitTemplate({
+      template: val.template,
+      name: val.template_name,
+    });
+    console.log(resp);
+  }
+
+  async function onTemplateRender(val: any) {
+    try {
+      const resp = await render({
+        variables: JSON.parse(val.variables),
+        name: val.template_name,
+      });
+      console.log(resp);
+    } catch {}
+  }
 
   return (
     <div className={styles.root}>
@@ -54,19 +76,21 @@ function TemplateEditor() {
       </div>
       <div className={styles.parent}>
         <div className={styles.child}>
-          <form onSubmit={form.onSubmit((values) => console.log(values))}>
+          <form
+            onSubmit={submitForm.onSubmit((values) => onTemplateSubmit(values))}
+          >
             <TextInput
               required
               label="Template Name"
               placeholder="my-template"
-              {...form.getInputProps("template-name")}
+              {...submitForm.getInputProps("template_name")}
             />
 
             <Textarea
               required
               label="Template"
               placeholder="<html></html>"
-              {...form.getInputProps("template")}
+              {...submitForm.getInputProps("template")}
             />
 
             <Group position="right" mt="md">
@@ -75,19 +99,21 @@ function TemplateEditor() {
           </form>
         </div>
         <div className={styles.child}>
-          <form onSubmit={form.onSubmit((values) => console.log(values))}>
+          <form
+            onSubmit={renderForm.onSubmit((values) => onTemplateRender(values))}
+          >
             <TextInput
               required
               label="Template Name"
               placeholder="my-template"
-              {...form.getInputProps("template-name")}
+              {...renderForm.getInputProps("template_name")}
             />
 
             <Textarea
               required
               label="Template Variables"
               placeholder='{"name":"John"}'
-              {...form.getInputProps("variables")}
+              {...renderForm.getInputProps("variables")}
             />
 
             <Group position="right" mt="md">
@@ -95,6 +121,13 @@ function TemplateEditor() {
             </Group>
           </form>
         </div>
+      </div>
+      <div className={styles.rendered}>
+        <div
+          dangerouslySetInnerHTML={{
+            __html: rendered,
+          }}
+        ></div>
       </div>
     </div>
   );

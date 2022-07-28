@@ -12,3 +12,7 @@
   flex: 1 1 auto;
   padding: 8px;
 }
+
+.rendered {
+  padding: 8px;
+}
