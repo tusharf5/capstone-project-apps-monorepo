@@ -95,7 +95,7 @@ function TemplateEditor() {
             />
 
             <Group position="right" mt="md">
-              <Button type="submit">Submit Template</Button>
+              <Button type="submit">Submit</Button>
             </Group>
           </form>
         </div>
