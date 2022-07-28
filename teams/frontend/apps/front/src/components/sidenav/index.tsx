@@ -16,14 +16,14 @@ function Sidenav(props: Props) {
             props.onChange("template-editor");
           }}
         >
-          <div>Template Editor</div>
+          <div className={styles.listItem}>Template Editor</div>
         </li>
         <li
           onClick={() => {
             props.onChange("recipients");
           }}
         >
-          <div>Recipients</div>
+          <div className={styles.listItem}>Recipients</div>
         </li>
       </ul>
     </div>

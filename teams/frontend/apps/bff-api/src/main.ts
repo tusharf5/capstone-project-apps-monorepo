@@ -52,6 +52,8 @@ server.get('/health-status', async (request, reply) => {
 // eslint-disable-next-line require-await
 server.get('/bff/upload-file', async (request, reply) => {
   try {
+    // eslint-disable-next-line no-console
+    console.log(process.env);
     const command = new PutObjectCommand({
       Bucket: `team-frontend-assets-${GLOBAL_VAR_NODE_ENV}`,
       Key: `recipients/${Date.now()}.csv`,
@@ -80,3 +82,6 @@ export async function startServer(): Promise<void> {
     throw err;
   }
 }
+
+// eslint-disable-next-line no-console
+console.log(process.env);
