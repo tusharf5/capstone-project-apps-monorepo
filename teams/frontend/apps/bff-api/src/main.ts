@@ -2,6 +2,7 @@ import fastify from 'fastify';
 
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import axios from 'axios';
 
 const s3Client = new S3Client({ region: 'us-west-2' });
 
@@ -62,6 +63,30 @@ server.get('/bff/upload-file', async (request, reply) => {
     return reply.code(200).send({ message: 'okay', url });
   } catch (err) {
     return reply.code(500).send({ message: 'error', error: (err as Error).message });
+  }
+});
+
+const url = `http://${process.env.TEMPLATE_MANAGER_SERVICE_HOST}:${process.env.TEMPLATE_MANAGER_SERVICE_PORT}/templates`;
+
+server.post('/bff/templates', async (request, reply) => {
+  try {
+    const response = await axios.post(url, request.body);
+    return reply.code(200).send(response.data);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return reply.code(500).send({ message: 'Request failed' });
+  }
+});
+
+server.post('/bff/templates/render', async (request, reply) => {
+  try {
+    const response = await axios.post(`${url}/render`, request.body);
+    return reply.code(200).send(response.data);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return reply.code(500).send({ message: 'Request failed' });
   }
 });
 
