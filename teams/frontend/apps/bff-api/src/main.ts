@@ -66,7 +66,7 @@ server.get('/bff/upload-file', async (request, reply) => {
   }
 });
 
-const url = `http://${process.env.TEMPLATE_MANAGER_SERVICE_HOST}:${process.env.TEMPLATE_MANAGER_SERVICE_PORT}/templates`;
+const url = `${process.env.TEMPLATE_MANAGER_SERVICE}/templates`;
 
 server.post('/bff/templates', async (request, reply) => {
   try {
