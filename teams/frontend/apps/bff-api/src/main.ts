@@ -7,11 +7,12 @@ import axios from 'axios';
 
 const s3Client = new S3Client({ region: 'us-west-2' });
 
-const server = fastify({ logger: true });
+const server = fastify({ logger: false });
 
 server.register(cors, {
   origin: '*',
-  credentials: true,
+  methods: ['GET', 'POST', 'OPTIONS', 'PUT'],
+  credentials: false,
 });
 
 process.on('uncaughtException', () => {
@@ -53,6 +54,11 @@ server.get('/bff/health-status', async (request, reply) => {
 
 // eslint-disable-next-line require-await
 server.get('/health-status', async (request, reply) => {
+  return reply.code(200).send({ message: 'success' });
+});
+
+// eslint-disable-next-line require-await
+server.get('/', async (request, reply) => {
   return reply.code(200).send({ message: 'success' });
 });
 
