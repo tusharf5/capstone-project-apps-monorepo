@@ -101,7 +101,7 @@ export async function startServer(): Promise<void> {
       host: '0.0.0.0',
     });
     // eslint-disable-next-line no-console
-    console.log('Listening on port 8080');
+    console.log('Listening on port 8080 - Demo');
   } catch (err) {
     // eslint-disable-next-line no-console
     console.error('Failed to boot up', err as Error);
