@@ -66,10 +66,9 @@ server.get('/bff/upload-file', async (request, reply) => {
   }
 });
 
-const url = `${process.env.TEMPLATE_MANAGER_SERVICE}/templates`;
-
 server.post('/bff/templates', async (request, reply) => {
   try {
+    const url = `${process.env.TEMPLATE_MANAGER_SERVICE}/templates`;
     const response = await axios.post(url, request.body);
     return reply.code(200).send(response.data);
   } catch (e) {
@@ -81,6 +80,13 @@ server.post('/bff/templates', async (request, reply) => {
 
 server.post('/bff/templates/render', async (request, reply) => {
   try {
+    // eslint-disable-next-line no-console
+    console.log(process.env);
+    // eslint-disable-next-line no-console
+    console.log(process.env.TEMPLATE_MANAGER_SERVICE);
+    const url = `${process.env.TEMPLATE_MANAGER_SERVICE}/templates`;
+    // eslint-disable-next-line no-console
+    console.log(url);
     const response = await axios.post(`${url}/render`, request.body);
     return reply.code(200).send(response.data);
   } catch (e) {
@@ -109,4 +115,4 @@ export async function startServer(): Promise<void> {
 }
 
 // eslint-disable-next-line no-console
-console.log(process.env);
+console.log(process.env.TEMPLATE_MANAGER_SERVICE);
