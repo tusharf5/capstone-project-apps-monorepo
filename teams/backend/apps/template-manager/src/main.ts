@@ -7,7 +7,7 @@ import { promisify } from 'util';
 const writeFile = promisify(fs.writeFile);
 const readFile = promisify(fs.readFile);
 
-const server = fastify({ logger: true });
+const server = fastify({ logger: false });
 
 process.on('uncaughtException', () => {
   // eslint-disable-next-line no-console
@@ -48,6 +48,11 @@ server.get('/templates/health-status', async (request, reply) => {
 
 // eslint-disable-next-line require-await
 server.get('/health-status', async (request, reply) => {
+  return reply.code(200).send({ message: 'success' });
+});
+
+// eslint-disable-next-line require-await
+server.get('/', async (request, reply) => {
   return reply.code(200).send({ message: 'success' });
 });
 
