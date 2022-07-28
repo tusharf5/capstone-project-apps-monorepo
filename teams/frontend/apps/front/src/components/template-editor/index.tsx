@@ -40,14 +40,14 @@ function TemplateEditor() {
   const submitForm = useForm({
     initialValues: {
       template: "",
-      template_name: "",
+      template_name: "test",
     },
   });
 
   const renderForm = useForm({
     initialValues: {
       variables: "",
-      template_name: false,
+      template_name: "test",
     },
   });
 
@@ -65,6 +65,7 @@ function TemplateEditor() {
         variables: JSON.parse(val.variables),
         name: val.template_name,
       });
+      setRendered(resp.body);
       console.log(resp);
     } catch {}
   }

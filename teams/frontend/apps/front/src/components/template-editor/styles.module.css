@@ -15,4 +15,7 @@
 
 .rendered {
   padding: 8px;
+  height: 390px;
+  overflow: auto;
+  border-top: 12px solid #eaeaea;
 }
